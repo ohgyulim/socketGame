@@ -1,39 +1,52 @@
 import pygame
-import pyautogui
 import sys
 import socket
 import threading
 
+
 server_ip ='127.0.0.1'
-port = 8111
+port = 8888
 
 pygame.init()
 pygame.display.set_caption('1v1_game_client')
 height=400
-width=800
+width=600
 
-enemy_img = pygame.image.load('dd.png')
+# sound=pygame.mixer.Sound('Goat - Wayne Jones.mp3')
+# sound.play(-1)
+# demo video를 위해 주석처리함
+
+enemy_img = pygame.image.load('penguin_blue.png')
+enemy_img2 = pygame.image.load('penguin_blue2.png')
 
 
-en_dino_height = enemy_img.get_size()[1]
-en_dino_bottom = height - en_dino_height
-en_dino_x = 50
-en_dino_y = en_dino_bottom
+en_penguin_height = enemy_img.get_size()[1]
+en_penguin_bottom = height - en_penguin_height
+en_penguin_x = 50
+en_penguin_y = en_penguin_bottom
+
 en_jump_top = 200
-# leg_swap = True
+en_leg_swap = True
 en_is_bottom = True
 en_is_go_up = False
 
 
-enemy_imgTree = pygame.image.load('tree.png')
-en_tree_height = enemy_imgTree.get_size()[1]
-en_tree_x = width
-en_tree_y = height - en_tree_height
+enemy_imgice = pygame.image.load('ice.png')
+en_ice_height = enemy_imgice.get_size()[1]
+en_ice_x = width
+en_ice_y = height - en_ice_height
+
+
+en_running=True
+
+blue_win=pygame.image.load('blue_win.png')
+gray_win=pygame.image.load('gray_win.png')
+draw = pygame.image.load('draw.png')
 
 
 
 def consoles():
-    global en_dino_x, en_dino_y,en_is_bottom, en_is_go_up
+    global en_penguin_x, en_penguin_y,en_is_bottom, en_is_go_up
 
     while True:
         msg = client.recv(1024)
@@ -41,49 +54,58 @@ def consoles():
             en_is_go_up = True
             en_is_bottom = False
         if en_is_go_up:
-            en_dino_y -=10
+            en_penguin_y -=10
         elif not en_is_go_up and not en_is_bottom:
-            en_dino_y += 10.0
+            en_penguin_y += 10.0
  
-        # dino top and bottom check
-        if en_is_go_up and en_dino_y <= en_jump_top:
+        # penguin top and bottom check
+        if en_is_go_up and en_penguin_y <= en_jump_top:
             en_is_go_up = False
  
-        if not en_is_bottom and en_dino_y >= en_dino_bottom:
+        if not en_is_bottom and en_penguin_y >= en_penguin_bottom:
             en_is_bottom = True
-            en_dino_y = en_dino_bottom
+            en_penguin_y = en_penguin_bottom
+        
 
 def acceptC():
     global client
     client=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((server_ip,port))
-
+    # input()
     thr=threading.Thread(target=consoles,args=())
     thr.Daemon=True
     thr.start()
 
+
 def GameMain():
-    global en_dino_x,en_dino_y,en_is_bottom, en_is_go_up, en_tree_x,en_tree_y,en_jump_top,enemy_imgTree, enemy_img
-    img = pygame.image.load('dd.png')
+    global en_penguin_x,en_penguin_y,en_is_bottom, en_is_go_up, en_ice_x,en_ice_y,en_jump_top,enemy_imgice, enemy_img, en_leg_swap,en_running,blue_win,gray_win,draw
+    img = pygame.image.load('penguin_final1.png')
+    img2 = pygame.image.load('penguin_final2.png')
     imgh=img.get_size()[1]
     imgw=img.get_size()[0]
     x=50
-    dino_bottom = height - imgh
-    y=dino_bottom
+    penguin_bottom = height - imgh
+    y=penguin_bottom
+
     is_bottom=True
     is_go_up =False
     jump_top=200
+    leg_swap = True
 
-    imgTree = pygame.image.load('tree.png')
-    tree_height = imgTree.get_size()[1]
-    tree_x = width
-    tree_y = height - en_tree_height
+    imgice = pygame.image.load('ice.png')
+    ice_height = imgice.get_size()[1]
+    ice_x = width
+    ice_y = height - en_ice_height
+    
+
+    running = True
 
 
     screen= pygame.display.set_mode((width,height))
     fps = pygame.time.Clock()
 
-    while True:
+
+    while (en_running and running):
         screen.fill((255,255,255))
 
         for event in pygame.event.get():
@@ -104,41 +126,90 @@ def GameMain():
         if is_go_up and y <= jump_top:
             is_go_up = False
  
-        if not is_bottom and y >= dino_bottom:
+        if not is_bottom and y >= penguin_bottom:
             is_bottom = True
-            y = dino_bottom
+            y = penguin_bottom
         
-        tree_x -= 12.0
-        if tree_x <= 0:
-            tree_x = width
+        ice_x -= 12.0
+        if ice_x <= 0:
+            ice_x = width
 
 
         if en_is_go_up:
-            en_dino_y -= 10.0
+            en_penguin_y -= 10.0
         elif not en_is_go_up and not en_is_bottom:
-            en_dino_y += 10.0
+            en_penguin_y += 10.0
         
-        if en_is_go_up and en_dino_y <= en_jump_top:
+        if en_is_go_up and en_penguin_y <= en_jump_top:
             en_is_go_up = False
  
-        if not en_is_bottom and en_dino_y >= en_dino_bottom:
+        if not en_is_bottom and en_penguin_y >= en_penguin_bottom:
             en_is_bottom = True
-            en_dino_y = en_dino_bottom
+            en_penguin_y = en_penguin_bottom
 
-        en_tree_x -= 12.0
-        if en_tree_x <= 0:
-            en_tree_x = width
+        en_ice_x -= 12.0
+        if en_ice_x <= 0:
+            en_ice_x = width
+        
+        penguin_rect1=pygame.Rect(img.get_rect())
+        penguin_rect2=pygame.Rect(img2.get_rect())
+        penguin_rect1.left=x
+        penguin_rect1.top=y
+        penguin_rect2.left=x
+        penguin_rect2.top=y
+        ice_rect = pygame.Rect(imgice.get_rect())
+        ice_rect.left=ice_x
+        ice_rect.top=ice_y
+
+        en_penguin_rect1=pygame.Rect(enemy_img.get_rect())
+        en_penguin_rect1.left = en_penguin_x
+        en_penguin_rect1.top=en_penguin_y
+        en_penguin_rect2=pygame.Rect(enemy_img2.get_rect())
+        en_penguin_rect2.left=en_penguin_x
+        en_penguin_rect2.top=en_penguin_y
+        en_ice_rect = pygame.Rect(enemy_imgice.get_rect())
+        en_ice_rect.left=en_ice_x
+        en_ice_rect.top=en_ice_y
+
+
+        if ice_rect.colliderect(penguin_rect1) or ice_rect.colliderect(penguin_rect2): # blue
+            print("충돌")
+            running = False
+        if en_ice_rect.colliderect(en_penguin_rect1) or en_ice_rect.colliderect(en_penguin_rect2): # gray
+            print("충돌")
+            en_running=False
  
-        screen.blit(img,(x,y))
-        screen.blit(enemy_img,(en_dino_x,en_dino_y))
-        screen.blit(imgTree, (tree_x, tree_y))
-        screen.blit(enemy_imgTree, (en_tree_x, en_tree_y))
+
+        if leg_swap:
+            screen.blit(img, (x, y))
+            leg_swap = False
+        else:
+            screen.blit(img2, (x, y))
+            leg_swap = True
+
+        if en_leg_swap:
+            screen.blit(enemy_img, (en_penguin_x, en_penguin_y))
+            en_leg_swap = False
+        else:
+            screen.blit(enemy_img2, (en_penguin_x, en_penguin_y))
+            en_leg_swap = True
+        # screen.blit(img,(x,y))
+        # screen.blit(enemy_img,(en_penguin_x,en_penguin_y))
+        screen.blit(imgice, (ice_x, ice_y))
+        screen.blit(enemy_imgice, (en_ice_x, en_ice_y))
+        
 
         pygame.display.update()
-        fps.tick(30)
+        fps.tick(5)
+    if(running==True and en_running==False):
+        screen.blit(gray_win,(0,0))
+    elif(running==False and en_running==True):
+        screen.blit(blue_win,(0,0))
+    elif(running==False and en_running==False):
+        screen.blit(draw,(0,0))
+    pygame.display.update()
 
 
 if __name__ =='__main__':
     acceptC()
     GameMain()
-
